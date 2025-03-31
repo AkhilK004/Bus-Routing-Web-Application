@@ -14,11 +14,20 @@ import {
   Select,
   MenuItem,
   Theme,
+  Slider,
+  FormGroup,
+  FormControlLabel,
+  Checkbox,
+  Paper,
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import SearchIcon from '@mui/icons-material/Search';
 import LocationOnIcon from '@mui/icons-material/LocationOn';
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
+import AcUnitIcon from '@mui/icons-material/AcUnit';
+import WbSunnyIcon from '@mui/icons-material/WbSunny';
+import BedIcon from '@mui/icons-material/Bed';
+import EventSeatIcon from '@mui/icons-material/EventSeat';
 import { useNavigate } from 'react-router-dom';
 
 const HeroSection = styled(Box)(({ theme }: { theme: Theme }) => ({
@@ -44,6 +53,16 @@ const RouteCard = styled(Card)(({ theme }: { theme: Theme }) => ({
   },
 }));
 
+const FilterSection = styled(Paper)(({ theme }: { theme: Theme }) => ({
+  padding: theme.spacing(3),
+  backgroundColor: '#f5f5f5',
+  height: 'fit-content',
+  position: 'sticky',
+  top: theme.spacing(2),
+  borderRadius: theme.spacing(2),
+  boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
+}));
+
 interface Route {
   id: number;
   from: string;
@@ -58,6 +77,9 @@ const Home = () => {
   const [fromLocation, setFromLocation] = useState('');
   const [toLocation, setToLocation] = useState('');
   const [date, setDate] = useState('');
+  const [priceRange, setPriceRange] = useState<number[]>([0, 2000]);
+  const [selectedBusTypes, setSelectedBusTypes] = useState<string[]>([]);
+  const [selectedTimeSlots, setSelectedTimeSlots] = useState<string[]>([]);
 
   const featuredRoutes: Route[] = [
     {
@@ -126,10 +148,40 @@ const Home = () => {
     },
   ];
 
+  const busTypes = [
+    { id: 'ac', label: 'AC', icon: <AcUnitIcon /> },
+    { id: 'non-ac', label: 'Non-AC', icon: <WbSunnyIcon /> },
+    { id: 'sleeper', label: 'Sleeper', icon: <BedIcon /> },
+    { id: 'seater', label: 'Seater', icon: <EventSeatIcon /> },
+  ];
+
+  const timeSlots = [
+    { id: 'early-morning', label: 'Early Morning (12 AM - 6 AM)', icon: <AccessTimeIcon /> },
+    { id: 'morning', label: 'Morning (6 AM - 12 PM)', icon: <AccessTimeIcon /> },
+    { id: 'afternoon', label: 'Afternoon (12 PM - 6 PM)', icon: <AccessTimeIcon /> },
+    { id: 'evening', label: 'Evening (6 PM - 12 AM)', icon: <AccessTimeIcon /> },
+  ];
+
   const handleSearch = () => {
     if (fromLocation && toLocation && date) {
       navigate('/select-bus');
     }
+  };
+
+  const handleBusTypeChange = (busType: string) => {
+    setSelectedBusTypes(prev =>
+      prev.includes(busType)
+        ? prev.filter(type => type !== busType)
+        : [...prev, busType]
+    );
+  };
+
+  const handleTimeSlotChange = (timeSlot: string) => {
+    setSelectedTimeSlots(prev =>
+      prev.includes(timeSlot)
+        ? prev.filter(slot => slot !== timeSlot)
+        : [...prev, timeSlot]
+    );
   };
 
   return (
@@ -156,9 +208,14 @@ const Home = () => {
                   label="From"
                   onChange={(e) => setFromLocation(e.target.value)}
                 >
-                  <MenuItem value="new-york">New York</MenuItem>
-                  <MenuItem value="los-angeles">Los Angeles</MenuItem>
-                  <MenuItem value="chicago">Chicago</MenuItem>
+                  <MenuItem value="gwalior">Gwalior</MenuItem>
+                  <MenuItem value="jhansi">Jhansi</MenuItem>
+                  <MenuItem value="bangalore">Bangalore</MenuItem>
+                  <MenuItem value="calcutta">Calcutta</MenuItem>
+                  <MenuItem value="dharwad">Dharwad</MenuItem>
+                  <MenuItem value="jaipur">Jaipur</MenuItem>
+                  <MenuItem value="hyderabad">Hyderabad</MenuItem>
+                  <MenuItem value="pune">Pune</MenuItem>
                 </Select>
               </FormControl>
             </Grid>
@@ -170,9 +227,14 @@ const Home = () => {
                   label="To"
                   onChange={(e) => setToLocation(e.target.value)}
                 >
-                  <MenuItem value="boston">Boston</MenuItem>
-                  <MenuItem value="san-francisco">San Francisco</MenuItem>
-                  <MenuItem value="detroit">Detroit</MenuItem>
+                  <MenuItem value="nagpur">Nagpur</MenuItem>
+                  <MenuItem value="delhi">Delhi</MenuItem>
+                  <MenuItem value="mumbai">Mumbai</MenuItem>
+                  <MenuItem value="chennai">Chennai</MenuItem>
+                  <MenuItem value="bangalore">Bangalore</MenuItem>
+                  <MenuItem value="jaipur">Jaipur</MenuItem>
+                  <MenuItem value="hyderabad">Hyderabad</MenuItem>
+                  <MenuItem value="pune">Pune</MenuItem>
                 </Select>
               </FormControl>
             </Grid>
@@ -200,36 +262,104 @@ const Home = () => {
           </Grid>
         </SearchCard>
 
-        <Typography variant="h4" component="h2" gutterBottom sx={{ mt: 6, mb: 3 }}>
-          Featured Routes
-        </Typography>
-
-        <Grid container spacing={4}>
-          {featuredRoutes.map((route) => (
-            <Grid item xs={12} md={4} key={route.id}>
-              <RouteCard>
-                <CardMedia
-                  component="img"
-                  height="200"
-                  image={route.image}
-                  alt={`${route.from} to ${route.to}`}
-                />
-                <CardContent>
-                  <Typography variant="h6" gutterBottom>
-                    {route.from} → {route.to}
-                  </Typography>
-                  <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
-                    <AccessTimeIcon sx={{ mr: 1 }} />
-                    <Typography variant="body2">{route.duration}</Typography>
-                  </Box>
-                  <Typography variant="h6" color="primary">
-                    {route.price}
-                  </Typography>
-                </CardContent>
-              </RouteCard>
+        <Box sx={{ display: 'flex', gap: 4, mt: 4 }}>
+          <Box sx={{ flex: 1 }}>
+            <Typography variant="h4" component="h2" gutterBottom sx={{ mb: 3 }}>
+              Featured Routes
+            </Typography>
+            <Grid container spacing={4}>
+              {featuredRoutes.map((route) => (
+                <Grid item xs={12} md={6} key={route.id}>
+                  <RouteCard>
+                    <CardMedia
+                      component="img"
+                      height="200"
+                      image={route.image}
+                      alt={`${route.from} to ${route.to}`}
+                    />
+                    <CardContent>
+                      <Typography variant="h6" gutterBottom>
+                        {route.from} → {route.to}
+                      </Typography>
+                      <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
+                        <AccessTimeIcon sx={{ mr: 1 }} />
+                        <Typography variant="body2">{route.duration}</Typography>
+                      </Box>
+                      <Typography variant="h6" color="primary">
+                        {route.price}
+                      </Typography>
+                    </CardContent>
+                  </RouteCard>
+                </Grid>
+              ))}
             </Grid>
-          ))}
-        </Grid>
+          </Box>
+
+          <Box sx={{ width: 300 }}>
+            <FilterSection>
+              <Typography variant="h6" gutterBottom sx={{ color: 'primary.main', fontWeight: 'bold' }}>
+                Filter Options
+              </Typography>
+              <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
+                <Box>
+                  <Typography gutterBottom sx={{ fontWeight: 'medium' }}>Price Range (₹)</Typography>
+                  <Slider
+                    value={priceRange}
+                    onChange={(_, newValue) => setPriceRange(newValue as number[])}
+                    valueLabelDisplay="auto"
+                    min={0}
+                    max={2000}
+                    step={100}
+                    marks={[
+                      { value: 0, label: '₹0' },
+                      { value: 1000, label: '₹1000' },
+                      { value: 2000, label: '₹2000' },
+                    ]}
+                    sx={{ color: 'primary.main' }}
+                  />
+                </Box>
+                <Box>
+                  <Typography gutterBottom sx={{ fontWeight: 'medium' }}>Bus Type</Typography>
+                  <FormGroup>
+                    {busTypes.map((type) => (
+                      <FormControlLabel
+                        key={type.id}
+                        control={
+                          <Checkbox
+                            checked={selectedBusTypes.includes(type.id)}
+                            onChange={() => handleBusTypeChange(type.id)}
+                            icon={type.icon}
+                            sx={{ color: 'primary.main' }}
+                          />
+                        }
+                        label={type.label}
+                      />
+                    ))}
+                  </FormGroup>
+                </Box>
+                <Box>
+                  <Typography gutterBottom sx={{ fontWeight: 'medium' }}>Departure Time</Typography>
+                  <FormGroup>
+                    {timeSlots.map((slot) => (
+                      <FormControlLabel
+                        key={slot.id}
+                        control={
+                          <Checkbox
+                            checked={selectedTimeSlots.includes(slot.id)}
+                            onChange={() => handleTimeSlotChange(slot.id)}
+                            icon={slot.icon}
+                            sx={{ color: 'primary.main' }}
+                          />
+                        }
+                        label={slot.label}
+                      />
+                    ))}
+                  </FormGroup>
+                </Box>
+              </Box>
+            </FilterSection>
+          </Box>
+        </Box>
       </Container>
     </Box>
   );
