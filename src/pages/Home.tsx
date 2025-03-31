@@ -37,9 +37,10 @@ const SearchCard = styled(Card)(({ theme }: { theme: Theme }) => ({
 
 const RouteCard = styled(Card)(({ theme }: { theme: Theme }) => ({
   height: '100%',
-  transition: 'transform 0.2s',
+  transition: 'all 0.3s ease-in-out',
   '&:hover': {
-    transform: 'translateY(-5px)',
+    transform: 'scale(1.05)',
+    boxShadow: '0 8px 24px rgba(0,0,0,0.15)',
   },
 }));
 
@@ -82,6 +83,46 @@ const Home = () => {
       duration: '4h 45m',
       price: '940 rs',
       image: 'https://source.unsplash.com/random/800x600/?road',
+    },
+    {
+      id: 4,
+      from: 'Calcutta',
+      to: 'Chennai',
+      duration: '7h 30m',
+      price: '1200 rs',
+      image: 'https://source.unsplash.com/random/800x600/?city',
+    },
+    {
+      id: 5,
+      from: 'Dharwad',
+      to: 'Bangalore',
+      duration: '5h 45m',
+      price: '750 rs',
+      image: 'https://source.unsplash.com/random/800x600/?landscape',
+    },
+    {
+      id: 6,
+      from: 'Jaipur',
+      to: 'Delhi',
+      duration: '5h 15m',
+      price: '850 rs',
+      image: 'https://source.unsplash.com/random/800x600/?architecture',
+    },
+    {
+      id: 7,
+      from: 'Hyderabad',
+      to: 'Chennai',
+      duration: '6h 30m',
+      price: '950 rs',
+      image: 'https://source.unsplash.com/random/800x600/?urban',
+    },
+    {
+      id: 8,
+      from: 'Pune',
+      to: 'Mumbai',
+      duration: '3h 45m',
+      price: '550 rs',
+      image: 'https://source.unsplash.com/random/800x600/?transport',
     },
   ];
 
