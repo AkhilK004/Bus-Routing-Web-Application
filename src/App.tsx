@@ -7,6 +7,7 @@ import Footer from './components/Footer';
 import Home from './pages/Home';
 import BusSelection from './pages/BusSelection';
 import BusTracking from './pages/BusTracking';
+import BookTicket from './pages/BookTicket';
 
 const theme = createTheme({
   palette: {
@@ -72,6 +73,8 @@ function App() {
               <Route path="/" element={<Home />} />
               <Route path="/select-bus" element={<BusSelection />} />
               <Route path="/track-bus" element={<BusTracking />} />
+              <Route path="/book-ticket" element={<BookTicket />} />
+              <Route path="/select-seats/:scheduleId" element={<BusSelection />} />
             </Routes>
           </main>
           <Footer />

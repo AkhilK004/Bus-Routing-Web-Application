@@ -134,15 +134,15 @@ const Navbar = () => {
               </NavButton>
               <NavButton
                 startIcon={<AccessTimeIcon />}
-                onClick={() => navigate('/schedule')}
-                active={isActive('/schedule')}
+                onClick={() => navigate('/book-ticket')}
+                active={isActive('/book-ticket')}
               >
                 Schedule
               </NavButton>
               <NavButton
                 startIcon={<DirectionsBusIcon />}
-                onClick={() => navigate('/select-bus')}
-                active={isActive('/select-bus')}
+                onClick={() => navigate('/book-ticket')}
+                active={isActive('/book-ticket')}
               >
                 Book Ticket
               </NavButton>
