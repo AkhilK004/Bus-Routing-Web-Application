@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="300" height="180" viewBox="0 0 300 180" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <pattern id="pattern-hearts" x="0" y="0" width="40" height="40" patternUnits="userSpaceOnUse">
+      <path d="M20,15 Q20,5 30,5 Q40,5 40,15 Q40,25 20,35 Q0,25 0,15 Q0,5 10,5 Q20,5 20,15" fill="#1A237E" fill-opacity="0.1"/>
+    </pattern>
+  </defs>
+  <rect width="300" height="180" fill="#E8F0FB"/>
+  <rect width="300" height="180" fill="url(#pattern-hearts)"/>
+  <circle cx="150" cy="90" r="40" fill="#1A237E" fill-opacity="0.1"/>
+  <circle cx="180" cy="90" r="40" fill="#1A237E" fill-opacity="0.1"/>
+</svg> 
