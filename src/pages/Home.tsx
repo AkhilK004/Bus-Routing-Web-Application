@@ -17,6 +17,8 @@ import {
   IconButton,
   TextField,
   InputAdornment,
+  Snackbar,
+  Alert,
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import SearchIcon from '@mui/icons-material/Search';
@@ -187,12 +189,24 @@ const Home = () => {
   const [fromLocation, setFromLocation] = useState('');
   const [toLocation, setToLocation] = useState('');
   const [date, setDate] = useState('');
+  const [openSnackbar, setOpenSnackbar] = useState(false);
   const offersContainerRef = React.useRef<HTMLDivElement>(null);
 
   const handleSwapLocations = () => {
     const temp = fromLocation;
     setFromLocation(toLocation);
     setToLocation(temp);
+  };
+
+  const handleOperatorClick = () => {
+    setOpenSnackbar(true);
+  };
+
+  const handleCloseSnackbar = (event?: React.SyntheticEvent | Event, reason?: string) => {
+    if (reason === 'clickaway') {
+      return;
+    }
+    setOpenSnackbar(false);
   };
 
   const offers = [
@@ -415,7 +429,7 @@ const Home = () => {
         <Grid container spacing={4} justifyContent="center">
           {operators.map((operator) => (
             <Grid item key={operator.id}>
-              <OperatorCard>
+              <OperatorCard onClick={handleOperatorClick}>
                 <img src={operator.logo} alt={operator.name} />
               </OperatorCard>
               <Typography variant="body2" align="center" sx={{ mt: 1 }}>
@@ -611,6 +625,27 @@ const Home = () => {
           Book your bus tickets with BRES and experience hassle-free travel planning. Our partnerships with leading bus operators ensure you get the best deals and reliable service for your journey.
         </Typography>
       </Box>
+
+      <Snackbar 
+        open={openSnackbar} 
+        autoHideDuration={4000} 
+        onClose={handleCloseSnackbar}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+      >
+        <Alert 
+          onClose={handleCloseSnackbar} 
+          severity="info" 
+          variant="filled"
+          sx={{ 
+            bgcolor: '#1A237E',
+            '& .MuiAlert-icon': {
+              color: 'white'
+            }
+          }}
+        >
+          This service is not available as of now. Please check back later.
+        </Alert>
+      </Snackbar>
     </Box>
   );
 };
