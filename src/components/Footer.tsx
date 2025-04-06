@@ -10,6 +10,7 @@ import {
   Theme,
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
+import { useNavigate } from 'react-router-dom';
 import DirectionsBusIcon from '@mui/icons-material/DirectionsBus';
 import FacebookIcon from '@mui/icons-material/Facebook';
 import TwitterIcon from '@mui/icons-material/Twitter';
@@ -64,32 +65,48 @@ const SocialIcon = styled(IconButton)(({ theme }: { theme: Theme }) => ({
   },
 }));
 
+const StyledFooterLink = styled('button')(({ theme }) => ({
+  background: 'none',
+  border: 'none',
+  color: 'rgba(255, 255, 255, 0.8)',
+  padding: 0,
+  textAlign: 'left',
+  cursor: 'pointer',
+  display: 'block',
+  marginBottom: theme.spacing(1),
+  transition: 'all 0.2s ease-in-out',
+  fontFamily: 'inherit',
+  fontSize: '0.875rem',
+  '&:hover': {
+    color: 'white',
+    transform: 'translateX(5px)',
+  },
+}));
+
 const Footer = () => {
+  const navigate = useNavigate();
+
   const popularRoutes = [
-    { from: 'Delhi', to: 'Mumbai' },
-    { from: 'Bangalore', to: 'Chennai' },
-    { from: 'Kolkata', to: 'Hyderabad' },
-    { from: 'Pune', to: 'Ahmedabad' },
+    { from: 'Delhi', to: 'Mumbai', id: 'delhi-mumbai' },
+    { from: 'Bangalore', to: 'Chennai', id: 'bangalore-chennai' },
+    { from: 'Kolkata', to: 'Hyderabad', id: 'kolkata-hyderabad' },
+    { from: 'Pune', to: 'Ahmedabad', id: 'pune-ahmedabad' },
   ];
 
   const popularCities = [
-    'Delhi',
-    'Mumbai',
-    'Bangalore',
-    'Chennai',
-    'Kolkata',
-    'Hyderabad',
-    'Pune',
-    'Ahmedabad',
+    { name: 'Delhi', id: 'delhi' },
+    { name: 'Mumbai', id: 'mumbai' },
+    { name: 'Bangalore', id: 'bangalore' },
+    { name: 'Chennai', id: 'chennai' },
+    { name: 'Kolkata', id: 'kolkata' },
+    { name: 'Hyderabad', id: 'hyderabad' },
   ];
 
   const popularOperators = [
-    'Volvo Express',
-    'Luxury Travels',
-    'Premium Bus',
-    'Comfort Coach',
-    'Royal Express',
-    'Elite Travels',
+    { name: 'Volvo Express', id: 'volvo-express' },
+    { name: 'Luxury Travels', id: 'luxury-travels' },
+    { name: 'Premium Bus', id: 'premium-bus' },
+    { name: 'Comfort Coach', id: 'comfort-coach' },
   ];
 
   return (
@@ -129,10 +146,13 @@ const Footer = () => {
           <Grid item xs={12} sm={6} md={2}>
             <FooterSection>
               <FooterTitle>Popular Routes</FooterTitle>
-              {popularRoutes.map((route, index) => (
-                <FooterLink key={index} href="#">
+              {popularRoutes.map((route) => (
+                <StyledFooterLink
+                  key={route.id}
+                  onClick={() => navigate(`/route/${route.id}`)}
+                >
                   {route.from} → {route.to}
-                </FooterLink>
+                </StyledFooterLink>
               ))}
             </FooterSection>
           </Grid>
@@ -141,10 +161,13 @@ const Footer = () => {
           <Grid item xs={12} sm={6} md={2}>
             <FooterSection>
               <FooterTitle>Popular Cities</FooterTitle>
-              {popularCities.map((city, index) => (
-                <FooterLink key={index} href="#">
-                  {city}
-                </FooterLink>
+              {popularCities.map((city) => (
+                <StyledFooterLink
+                  key={city.id}
+                  onClick={() => navigate(`/city/${city.id}`)}
+                >
+                  {city.name}
+                </StyledFooterLink>
               ))}
             </FooterSection>
           </Grid>
@@ -153,10 +176,13 @@ const Footer = () => {
           <Grid item xs={12} sm={6} md={2}>
             <FooterSection>
               <FooterTitle>Bus Operators</FooterTitle>
-              {popularOperators.map((operator, index) => (
-                <FooterLink key={index} href="#">
-                  {operator}
-                </FooterLink>
+              {popularOperators.map((operator) => (
+                <StyledFooterLink
+                  key={operator.id}
+                  onClick={() => navigate(`/operator/${operator.id}`)}
+                >
+                  {operator.name}
+                </StyledFooterLink>
               ))}
             </FooterSection>
           </Grid>
