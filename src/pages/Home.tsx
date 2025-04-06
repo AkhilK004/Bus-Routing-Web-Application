@@ -209,6 +209,19 @@ const Home = () => {
     setOpenSnackbar(false);
   };
 
+  const handleTodayClick = () => {
+    const today = new Date();
+    const formattedDate = today.toISOString().split('T')[0];
+    setDate(formattedDate);
+  };
+
+  const handleTomorrowClick = () => {
+    const tomorrow = new Date();
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    const formattedDate = tomorrow.toISOString().split('T')[0];
+    setDate(formattedDate);
+  };
+
   const offers = [
     {
       id: 1,
@@ -326,7 +339,7 @@ const Home = () => {
                   }}
                 />
               </Grid>
-              <Grid item xs={12} md={2}>
+              <Grid item xs={12} md={3}>
                 <StyledTextField
                   fullWidth
                   type="date"
@@ -346,6 +359,7 @@ const Home = () => {
                   variant="contained"
                   color="inherit"
                   fullWidth
+                  onClick={handleTodayClick}
                   sx={{ 
                     bgcolor: '#F0F2F5',
                     color: '#1A237E',
@@ -362,6 +376,7 @@ const Home = () => {
                   variant="contained"
                   color="inherit"
                   fullWidth
+                  onClick={handleTomorrowClick}
                   sx={{ 
                     bgcolor: '#F0F2F5',
                     color: '#1A237E',
@@ -373,7 +388,7 @@ const Home = () => {
                   Tomorrow
                 </Button>
               </Grid>
-              <Grid item xs={12} md={2}>
+              <Grid item xs={12} md={1}>
                 <Button
                   fullWidth
                   variant="contained"
