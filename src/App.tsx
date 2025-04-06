@@ -12,6 +12,7 @@ import SeatSelection from './pages/SeatSelection';
 import RouteInfo from './pages/RouteInfo';
 import CityInfo from './pages/CityInfo';
 import OperatorInfo from './pages/OperatorInfo';
+import PaymentPage from './pages/PaymentPage';
 
 const theme = createTheme({
   palette: {
@@ -82,6 +83,7 @@ function App() {
               <Route path="/route/:routeId" element={<RouteInfo />} />
               <Route path="/city/:cityId" element={<CityInfo />} />
               <Route path="/operator/:operatorId" element={<OperatorInfo />} />
+              <Route path="/payment" element={<PaymentPage />} />
             </Routes>
           </main>
           <Footer />
