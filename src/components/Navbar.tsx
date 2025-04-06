@@ -116,15 +116,9 @@ const Navbar = () => {
                 <DirectionsBusIcon sx={{ mr: 1, fontSize: '2rem' }} />
                 BRES
               </Logo>
-              <HomeButton
-                onClick={() => navigate('/')}
-                size="large"
-                aria-label="home"
-              >
-                <HomeIcon />
-              </HomeButton>
             </LogoContainer>
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+            
+            <Box sx={{ display: 'flex', alignItems: 'center' }}>
               <NavButton
                 startIcon={<LocationOnIcon />}
                 onClick={() => navigate('/track-bus')}
