@@ -16,6 +16,12 @@ import {
   IconButton,
   Divider,
   Alert,
+  Menu,
+  MenuItem,
+  List,
+  ListItem,
+  ListItemText,
+  ListItemIcon,
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import LocationOnIcon from '@mui/icons-material/LocationOn';
@@ -25,6 +31,7 @@ import WarningIcon from '@mui/icons-material/Warning';
 import SearchIcon from '@mui/icons-material/Search';
 import DirectionsBusIcon from '@mui/icons-material/DirectionsBus';
 import ClearIcon from '@mui/icons-material/Clear';
+import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 
 const TrackingCard = styled(Card)(({ theme }: { theme: Theme }) => ({
   marginBottom: theme.spacing(3),
@@ -48,6 +55,26 @@ const StatusChip = styled(Chip, {
       ? theme.palette.success.light
       : theme.palette.error.light,
   color: status === 'on-time' ? theme.palette.success.dark : theme.palette.error.dark,
+}));
+
+// Add new styled components for the dropdown
+const DropdownButton = styled(Button)(({ theme }) => ({
+  marginBottom: theme.spacing(2),
+  width: '100%',
+  justifyContent: 'space-between',
+  padding: theme.spacing(1.5),
+  backgroundColor: theme.palette.background.paper,
+  '&:hover': {
+    backgroundColor: theme.palette.action.hover,
+  },
+}));
+
+const BusListItem = styled(MenuItem)(({ theme }) => ({
+  padding: theme.spacing(2),
+  borderBottom: `1px solid ${theme.palette.divider}`,
+  '&:last-child': {
+    borderBottom: 'none',
+  },
 }));
 
 interface BusLocation {
@@ -125,12 +152,48 @@ const busData: BusLocation[] = [
   },
 ];
 
+// Sample bus tracking data
+const busTrackingData = [
+  {
+    pnr: 'PNR123456',
+    busNumber: 'GW-001',
+    from: 'Gwalior',
+    to: 'Nagpur',
+    departureTime: '10:00 AM',
+    arrivalTime: '2:30 PM',
+    status: 'on-time',
+    currentLocation: 'Bhopal',
+  },
+  {
+    pnr: 'PNR789012',
+    busNumber: 'DL-002',
+    from: 'Delhi',
+    to: 'Jaipur',
+    departureTime: '9:00 AM',
+    arrivalTime: '3:00 PM',
+    status: 'delayed',
+    currentLocation: 'Gurugram',
+  },
+  {
+    pnr: 'PNR345678',
+    busNumber: 'MU-003',
+    from: 'Mumbai',
+    to: 'Pune',
+    departureTime: '11:30 AM',
+    arrivalTime: '2:00 PM',
+    status: 'on-time',
+    currentLocation: 'Lonavala',
+  },
+];
+
 const BusTracking = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedBus, setSelectedBus] = useState<BusLocation | null>(null);
   const [searchResults, setSearchResults] = useState<BusLocation[]>([]);
   const [showResults, setShowResults] = useState(false);
   const [busLocation, setBusLocation] = useState<BusLocation>(busData[0]);
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const [selectedTracking, setSelectedTracking] = useState<typeof busTrackingData[0] | null>(null);
 
   // Handle search
   const handleSearch = () => {
@@ -180,11 +243,102 @@ const BusTracking = () => {
     return () => clearInterval(interval);
   }, []);
 
+  const handleDropdownClick = (event: React.MouseEvent<HTMLElement>) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleDropdownClose = () => {
+    setAnchorEl(null);
+  };
+
+  const handleTrackingSelect = (tracking: typeof busTrackingData[0]) => {
+    setSelectedTracking(tracking);
+    handleDropdownClose();
+    // Find and select the corresponding bus
+    const bus = busData.find(b => b.busNumber === tracking.busNumber);
+    if (bus) {
+      handleSelectBus(bus);
+    }
+  };
+
   return (
     <Container>
       <Typography variant="h4" component="h1" gutterBottom sx={{ mt: 4, mb: 3 }}>
         Live Bus Tracking
       </Typography>
+
+      {/* Add Tracking Dropdown */}
+      <Card sx={{ mb: 4 }}>
+        <CardContent>
+          <Typography variant="h6" gutterBottom>
+            Select Bus to Track
+          </Typography>
+          <DropdownButton
+            variant="outlined"
+            endIcon={<KeyboardArrowDownIcon />}
+            onClick={handleDropdownClick}
+          >
+            {selectedTracking ? (
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                <DirectionsBusIcon />
+                <Typography>
+                  {`${selectedTracking.busNumber} - ${selectedTracking.from} to ${selectedTracking.to}`}
+                </Typography>
+              </Box>
+            ) : (
+              'Select a bus to track'
+            )}
+          </DropdownButton>
+          <Menu
+            anchorEl={anchorEl}
+            open={Boolean(anchorEl)}
+            onClose={handleDropdownClose}
+            PaperProps={{
+              sx: {
+                width: '100%',
+                maxWidth: '600px',
+                mt: 1,
+              },
+            }}
+          >
+            {busTrackingData.map((tracking) => (
+              <BusListItem
+                key={tracking.pnr}
+                onClick={() => handleTrackingSelect(tracking)}
+              >
+                <Grid container spacing={2}>
+                  <Grid item xs={12} md={4}>
+                    <Typography variant="subtitle1" fontWeight="bold">
+                      {tracking.busNumber}
+                    </Typography>
+                    <Typography variant="body2" color="text.secondary">
+                      PNR: {tracking.pnr}
+                    </Typography>
+                  </Grid>
+                  <Grid item xs={12} md={4}>
+                    <Typography variant="body2">
+                      {tracking.from} → {tracking.to}
+                    </Typography>
+                    <Typography variant="body2" color="text.secondary">
+                      {tracking.departureTime} - {tracking.arrivalTime}
+                    </Typography>
+                  </Grid>
+                  <Grid item xs={12} md={4}>
+                    <StatusChip
+                      label={tracking.status === 'on-time' ? 'On Time' : 'Delayed'}
+                      status={tracking.status as 'on-time' | 'delayed'}
+                      size="small"
+                    />
+                    <Typography variant="body2" sx={{ mt: 1 }}>
+                      Current: {tracking.currentLocation}
+                    </Typography>
+                  </Grid>
+                </Grid>
+              </BusListItem>
+            ))}
+          </Menu>
+        </CardContent>
+      </Card>
 
       <Card sx={{ mb: 4, p: 3 }}>
         <Typography variant="h6" gutterBottom>

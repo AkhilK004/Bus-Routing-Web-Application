@@ -206,92 +206,121 @@ const SeatSelection = () => {
   const [seats] = useState<Seat[]>(generateSeats());
 
   const handleSeatClick = (seat: Seat) => {
-    if (seat.status === 'available') {
-      if (selectedSeats.includes(seat.id)) {
-        setSelectedSeats(selectedSeats.filter((id) => id !== seat.id));
+    if (seat.status === 'booked') return;
+
+    setSelectedSeats((prev) => {
+      if (prev.includes(seat.id)) {
+        return prev.filter((id) => id !== seat.id);
       } else {
-        setSelectedSeats([...selectedSeats, seat.id]);
+        return [...prev, seat.id];
       }
-    }
+    });
   };
 
   const handleProceedToPayment = () => {
-    if (schedule) {
-      // Navigate to payment page with selected seats and schedule info
-      navigate(`/payment/${scheduleId}`, { 
-        state: { 
-          selectedSeats,
-          schedule
-        } 
-      });
+    if (selectedSeats.length === 0) {
+      setError('Please select at least one seat');
+      return;
     }
+
+    // Calculate total amount
+    const totalAmount = selectedSeats.length * (schedule?.price || 0);
+
+    // Navigate to payment page with booking details
+    navigate('/payment', {
+      state: {
+        bookingDetails: {
+          busName: schedule?.operator,
+          from: schedule?.from,
+          to: schedule?.to,
+          date: new Date().toISOString().split('T')[0], // Current date for demo
+          seats: selectedSeats.map(id => `Seat ${id}`),
+          totalAmount: totalAmount,
+          scheduleId: schedule?.id,
+          busNumber: schedule?.busNumber,
+          departureTime: schedule?.departureTime,
+          arrivalTime: schedule?.arrivalTime,
+        }
+      }
+    });
   };
 
   if (loading) {
     return (
-      <Container sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '80vh' }}>
+      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '60vh' }}>
         <CircularProgress />
-      </Container>
+      </Box>
     );
   }
 
   if (error || !schedule) {
     return (
-      <Container sx={{ py: 4 }}>
-        <Typography variant="h5" color="error" gutterBottom>
-          {error || 'Bus schedule not found'}
+      <Container>
+        <Typography color="error" align="center">
+          {error || 'Failed to load bus schedule'}
         </Typography>
-        <Button 
-          variant="contained" 
-          onClick={() => navigate('/book-ticket')}
-          sx={{ mt: 2 }}
-        >
-          Back to Bus Search
-        </Button>
       </Container>
     );
   }
 
   return (
     <Container maxWidth="lg" sx={{ py: 4 }}>
-      <Typography variant="h4" component="h1" gutterBottom>
-        Select Your Seats
-      </Typography>
-
-      <Grid container spacing={4}>
+      <Grid container spacing={3}>
         <Grid item xs={12} md={8}>
-          <BusLayout>
-            <DriverArea>
-              <DirectionsBusIcon sx={{ fontSize: 40, mr: 2 }} />
-              <Typography variant="h6">Driver</Typography>
-            </DriverArea>
-
-            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-              {[1, 2, 3, 4].map((row) => (
-                <Box
-                  key={row}
-                  sx={{
-                    display: 'flex',
-                    justifyContent: 'center',
-                    gap: 1,
-                  }}
-                >
-                  {seats
-                    .filter((seat) => seat.row === row)
-                    .map((seat) => (
-                      <Tooltip
-                        key={seat.id}
-                        title={`Seat ${seat.id} - ${
-                          seat.status === 'ladies'
-                            ? 'Ladies Seat'
-                            : seat.status === 'booked'
-                            ? 'Booked'
-                            : 'Available'
-                        }`}
-                      >
+          <Card sx={{ mb: 3 }}>
+            <CardContent>
+              <Typography variant="h5" gutterBottom>
+                Select Your Seats
+              </Typography>
+              <Box sx={{ display: 'flex', gap: 2, mb: 2 }}>
+                <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                  <SeatButton status="available" disabled>
+                    <EventSeatIcon />
+                  </SeatButton>
+                  <Typography variant="body2" sx={{ ml: 1 }}>
+                    Available
+                  </Typography>
+                </Box>
+                <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                  <SeatButton status="selected" disabled>
+                    <EventSeatIcon />
+                  </SeatButton>
+                  <Typography variant="body2" sx={{ ml: 1 }}>
+                    Selected
+                  </Typography>
+                </Box>
+                <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                  <SeatButton status="booked" disabled>
+                    <EventSeatIcon />
+                  </SeatButton>
+                  <Typography variant="body2" sx={{ ml: 1 }}>
+                    Booked
+                  </Typography>
+                </Box>
+                <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                  <SeatButton status="ladies" disabled>
+                    <EventSeatIcon />
+                  </SeatButton>
+                  <Typography variant="body2" sx={{ ml: 1 }}>
+                    Ladies
+                  </Typography>
+                </Box>
+              </Box>
+              <BusLayout>
+                <DriverArea>
+                  <DirectionsBusIcon sx={{ fontSize: 32 }} />
+                </DriverArea>
+                <Grid container spacing={1} justifyContent="center">
+                  {generateSeats().map((seat) => (
+                    <Grid item key={seat.id}>
+                      <Tooltip title={`Seat ${seat.id}`}>
                         <span>
                           <SeatButton
-                            status={seat.status}
+                            status={
+                              selectedSeats.includes(seat.id)
+                                ? 'selected'
+                                : seat.status
+                            }
                             onClick={() => handleSeatClick(seat)}
                             disabled={seat.status === 'booked'}
                           >
@@ -299,103 +328,58 @@ const SeatSelection = () => {
                           </SeatButton>
                         </span>
                       </Tooltip>
-                    ))}
-                </Box>
-              ))}
-            </Box>
-
-            <Box
-              sx={{
-                display: 'flex',
-                justifyContent: 'center',
-                gap: 2,
-                mt: 4,
-                flexWrap: 'wrap',
-              }}
-            >
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                <SeatButton status="available">
-                  <EventSeatIcon />
-                </SeatButton>
-                <Typography>Available</Typography>
-              </Box>
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                <SeatButton status="selected">
-                  <EventSeatIcon />
-                </SeatButton>
-                <Typography>Selected</Typography>
-              </Box>
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                <SeatButton status="booked">
-                  <EventSeatIcon />
-                </SeatButton>
-                <Typography>Booked</Typography>
-              </Box>
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                <SeatButton status="ladies">
-                  <EventSeatIcon />
-                </SeatButton>
-                <Typography>Ladies Seat</Typography>
-              </Box>
-            </Box>
-          </BusLayout>
+                    </Grid>
+                  ))}
+                </Grid>
+              </BusLayout>
+            </CardContent>
+          </Card>
         </Grid>
 
         <Grid item xs={12} md={4}>
           <Card>
             <CardContent>
               <Typography variant="h6" gutterBottom>
-                Journey Details
+                Booking Summary
               </Typography>
               <Box sx={{ mb: 2 }}>
                 <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
                   <LocationOnIcon sx={{ mr: 1, color: 'primary.main' }} />
-                  <Typography>{schedule.from} → {schedule.to}</Typography>
+                  <Typography>
+                    {schedule.from} → {schedule.to}
+                  </Typography>
                 </Box>
                 <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
                   <AccessTimeIcon sx={{ mr: 1, color: 'primary.main' }} />
-                  <Typography>{schedule.departureTime} - {schedule.arrivalTime}</Typography>
+                  <Typography>
+                    {schedule.departureTime} - {schedule.arrivalTime}
+                  </Typography>
                 </Box>
                 <Typography variant="body2" color="text.secondary">
-                  Duration: {schedule.duration}
+                  {schedule.operator} - {schedule.busType}
                 </Typography>
-                <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
-                  Bus: {schedule.busNumber} | {schedule.busType}
+              </Box>
+              <Divider sx={{ my: 2 }} />
+              <Box sx={{ mb: 2 }}>
+                <Typography variant="subtitle2" gutterBottom>
+                  Selected Seats: {selectedSeats.length}
                 </Typography>
                 <Typography variant="body2" color="text.secondary">
-                  Operator: {schedule.operator}
+                  {selectedSeats.map(id => `Seat ${id}`).join(', ')}
                 </Typography>
               </Box>
-
-              <Divider sx={{ my: 2 }} />
-
-              <Box sx={{ mb: 2 }}>
-                <Typography variant="subtitle2" color="text.secondary">
-                  Selected Seats
-                </Typography>
-                <Typography>
-                  {selectedSeats.length > 0
-                    ? selectedSeats.join(', ')
-                    : 'No seats selected'}
+              <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 2 }}>
+                <Typography variant="subtitle1">Total Amount</Typography>
+                <Typography variant="subtitle1" fontWeight="bold">
+                  ₹{(selectedSeats.length * schedule.price).toFixed(2)}
                 </Typography>
               </Box>
-
-              <Box sx={{ mb: 2 }}>
-                <Typography variant="subtitle2" color="text.secondary">
-                  Total Amount
-                </Typography>
-                <Typography variant="h6" color="primary">
-                  ₹{selectedSeats.length * schedule.price}
-                </Typography>
-              </Box>
-
               <Button
-                variant="contained"
-                color="primary"
                 fullWidth
+                variant="contained"
                 size="large"
-                disabled={selectedSeats.length === 0}
                 onClick={handleProceedToPayment}
+                disabled={selectedSeats.length === 0}
               >
                 Proceed to Payment
               </Button>

@@ -50,5 +50,9 @@
     "@types/node": "^22.14.0",
     "@types/react": "^19.1.0",
     "@types/react-dom": "^19.1.1"
-  }
+  },
+  "description": "BRES is a modern web application for bus routing, ticket booking, and real-time bus tracking. Built with React and Material-UI, it provides a seamless experience for users to book bus tickets and track their journeys in real-time.",
+  "main": "index.js",
+  "author": "",
+  "license": "ISC"
 }

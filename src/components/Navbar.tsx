@@ -139,13 +139,6 @@ const Navbar = () => {
               >
                 Schedule
               </NavButton>
-              <NavButton
-                startIcon={<DirectionsBusIcon />}
-                onClick={() => navigate('/book-ticket')}
-                active={isActive('/book-ticket')}
-              >
-                Book Ticket
-              </NavButton>
               <AuthButton onClick={() => handleAuthModalOpen('login')}>
                 Login
               </AuthButton>

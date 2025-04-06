@@ -270,6 +270,20 @@ const Home = () => {
     }
   };
 
+  const handleSearch = () => {
+    if (!fromLocation || !toLocation || !date) {
+      setOpenSnackbar(true);
+      return;
+    }
+    navigate('/select-bus', {
+      state: {
+        from: fromLocation,
+        to: toLocation,
+        date: date
+      }
+    });
+  };
+
   return (
     <Box>
       <HeroSection>
@@ -363,16 +377,11 @@ const Home = () => {
                 <Button
                   fullWidth
                   variant="contained"
-                  size="large"
-                  onClick={() => navigate('/book-ticket')}
-                  sx={{
-                    bgcolor: '#D85B53',
-                    '&:hover': {
-                      bgcolor: '#C24F47',
-                    }
-                  }}
+                  color="primary"
+                  onClick={handleSearch}
+                  startIcon={<SearchIcon />}
                 >
-                  Search
+                  View Schedule
                 </Button>
               </Grid>
             </Grid>
